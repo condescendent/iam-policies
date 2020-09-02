@@ -38,13 +38,6 @@ def getIAMDetails(api_key, iam_token):
     response  = requests.get( url, headers=headers )
     return response.json()
 
-# Which account are we working from? Need the account ID
-def getAccounts(iam_token):
-    url     = "https://accounts.cloud.ibm.com/v1/accounts"
-    headers = { "Authorization" : "Bearer "+iam_token }
-    response  = requests.get( url, headers=headers )
-    return response.json()
-
 # Obtain access groups and handle paging
 def getAccessGroups(iam_token, account_id, user_iam_id=None):
     url = 'https://iam.cloud.ibm.com/v2/groups'
