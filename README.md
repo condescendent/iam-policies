@@ -1,9 +1,9 @@
 # IBM Cloud IAM Access Policies and Authorizations
 The Python script [iamPolicies.py](iamPolicies.py) can be used to retrieve information about IBM Cloud IAM policies for Access Groups and direct Authorizations. It obtains the Access Group information and its policies for either the entire account or for the optionally passed in user (iam_id). The iam_id identifies a user or a service ID.
 
-It makes use of two IBM Cloud API functions:
+The script makes use of two IBM Cloud API functions:
 - [List IAM Access Groups](https://cloud.ibm.com/apidocs/iam-access-groups#list-access-groups)
-- [List ](https://cloud.ibm.com/apidocs/iam-policy-management#list-policies)
+- [List IAM Access Policies](https://cloud.ibm.com/apidocs/iam-policy-management#list-policies)
 
 To create a file with an API key which could be passed as credentials, use the following IBM Cloud CLI command:   
 `ibmcloud iam api-key-create MY_API_KEY_NAME --file my__credentials.json --output json`
@@ -16,7 +16,10 @@ Information about service IDs can be retrieved using this command:
 
 Note that to access existing policies you need to be account owner or have Viewer role on all IAM-enabled services and on Account Management services. This includes the IAM Access Groups Service which is required to retrieve IAM Access Groups.
 
-### Sample usage and output
+See the following blog for background information and more links:
+- [Insights into IBM Cloud Access Privileges](https://www.ibm.com/cloud/blog/insights-into-ibm-cloud-access-privileges)
+
+# Sample usage and output
 The following shows the output when invoked for a user with ID IBMid-55xxxxYP1X.
 
 ```

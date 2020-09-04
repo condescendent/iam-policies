@@ -119,7 +119,12 @@ def getPoliciesForUser(iam_token, account_id, iam_id, extended):
 
 # General help
 def printHelp(progname):
-    print ("Usage: "+progname+" --cred credential-file [--user iam_id] [--ext]")
+    print("Usage: "+progname+" --cred credential-file [--user iam_id] [--ext]")
+    print("")
+    print("    --cred credential-file        JSON file with IAM API key")
+    print("    --user iam_id                 IAM ID of an user or service ID")
+    print("    --ext                         extended reporting")
+    print("")
 
 # Get some parameters, then process the steps
 if __name__== "__main__":
