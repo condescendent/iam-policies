@@ -20,7 +20,7 @@ Note that to access existing policies you need to be account owner or have Viewe
 The following shows the output when invoked for a user with ID IBMid-55xxxxYP1X.
 
 ```
-python3 iamPolicies.py my_credentials.json -u IBMid-55xxxxYP1X
+python3 iamPolicies.py --cred my_credentials.json --user IBMid-55xxxxYP1X
 Reading credentials
 generating auth tokens
 
@@ -67,7 +67,7 @@ Policy:
 Sample output when invoked for a service ID:
 
 ```
-python3 iamPolicies.py ~/.bluemix/apiKey_20206_Henrik_TF.json -u iam-ServiceId-a4bc6311-bc05-41e4-xxxx-1234567890
+python3 iamPolicies.py --cred ~/.bluemix/apiKey_20206_Henrik_TF.json --user iam-ServiceId-a4bc6311-bc05-41e4-xxxx-1234567890
 Reading credentials
 generating auth tokens
 

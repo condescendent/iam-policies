@@ -59,6 +59,14 @@ def getAccessPolicies(iam_token, account_id, access_group_id=None, user_iam_id=N
     response = requests.get(url, headers=headers, params=payload)
     return response.json()    
 
+# Retrieve details on a service ID, including history
+def getServiceID(iam_token, service_id):
+    url = 'https://iam.cloud.ibm.com/v1/serviceids/'+service_id
+    headers = { "Authorization" : "Bearer "+iam_token, "accept": "application/json" }
+    payload = {"include_history": "true"}
+    response = requests.get(url, headers=headers, params=payload)
+    return response.json()    
+
 # Some structured printing for groups
 def prettyGroup(group):
     print("=================================")
@@ -78,6 +86,14 @@ def prettyPolicy(policy):
     for attr in policy["resources"][0]["attributes"]:
         print("  ",attr["name"],":",attr["value"])
 
+# Retrieve details on a service ID and print information - for now as JSON
+def handleServiceID(iam_token, policy):
+    for attr in policy["resources"][0]["attributes"]:
+        #print(json.dumps(attr, indent=2))
+        if (attr["name"] == "resourceType" and attr["value"] == "serviceid"):
+            for attr2 in policy["resources"][0]["attributes"]:
+                if (attr2["name"] == "resource"):
+                    print(json.dumps(getServiceID(iam_token, attr2["value"]), indent=2))
 
 # Handle Access Groups for a specific user or service ID
 def getAccessGroupsForUser(iam_token, account_id, iam_id):
@@ -92,42 +108,45 @@ def getAccessGroupsForUser(iam_token, account_id, iam_id):
             prettyPolicy(apolicy)
 
 # Handle Policies for a specific user or service ID
-def getPoliciesForUser(iam_token, account_id, iam_id):
+def getPoliciesForUser(iam_token, account_id, iam_id, extended):
     apolicies=getAccessPolicies(iam_token, account_id, user_iam_id=iam_id)
     logging.info(json.dumps(apolicies, indent=2))
     for apolicy in apolicies["policies"]:
         prettyPolicy(apolicy)
+        if (extended):
+            handleServiceID(iam_token, apolicy)
 
 
 # General help
 def printHelp(progname):
-    print ("Usage: "+progname+" credential-file [-u iam_id]")
+    print ("Usage: "+progname+" --cred credential-file [--user iam_id] [--ext]")
 
 # Get some parameters, then process the steps
 if __name__== "__main__":
     credfile=None
     userID=None
-
-    if (len(sys.argv)<2):
+    extended=False
+    numArgs=len(sys.argv)
+    if (numArgs<3 or numArgs>6):
         printHelp(sys.argv[0])
         exit()
-    elif (len(sys.argv)==2):
-        credfile=sys.argv[1]
-        mode=1
-    elif (len(sys.argv)==4):
-        credfile=sys.argv[1]
-        if (sys.argv[2]=="-u"):
-            mode=2
-            userID=sys.argv[3]
+    i=1
+    while (i<numArgs):
+        if (sys.argv[i]=="--ext"):
+            extended=True
+        elif (sys.argv[i]=="--cred" and (i+1<numArgs)):
+            credfile=sys.argv[i+1]
+            i+=1
+        elif (sys.argv[i]=="--user" and (i+1<numArgs)):
+            userID=sys.argv[i+1]
+            i+=1
         else:
-            print ("wrong options")
+            print("wrong option")
             printHelp(sys.argv[0])
             exit()
-    else:
-        print ("unknown options")
-        printHelp(sys.argv[0])
-        exit()
-
+        # increment    
+        i+=1
+        
     # Read the credentials (API key), then generate an auth token
     print ("Reading credentials")
     apiKey=readApiKey(credfile)
@@ -145,4 +164,4 @@ if __name__== "__main__":
     getAccessGroupsForUser(iam_token=iam_token, account_id=account_id, iam_id=userID)
 
     print("\n================================\nAuthorizations:")
-    getPoliciesForUser(iam_token=iam_token, account_id=account_id, iam_id=userID)
+    getPoliciesForUser(iam_token=iam_token, account_id=account_id, iam_id=userID, extended=extended)
